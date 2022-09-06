@@ -29,7 +29,7 @@ model = Net()
 model.load_state_dict(state_dict)
 model.eval()
 
-from data import data_jitter_hue,data_jitter_brightness,data_jitter_saturation,data_jitter_contrast,data_rotate,data_hvflip,data_shear,data_translate,data_center,data_grayscale
+from data import data_jitter_hue,data_jitter_brightness,data_jitter_saturation,data_jitter_contrast,data_rotate,data_hvflip,data_shear,data_translate,data_center,data_grayscale , data_transforms
 
 
 test_dir = args.data + '/test_images'
@@ -40,7 +40,7 @@ def pil_loader(path):
         with Image.open(f) as img:
             return img.convert('RGB')
 
-transforms = [data_transforms,data_jitter_hue,data_jitter_brightness,data_jitter_saturation,data_jitter_contrast,data_rotate,data_hvflip,data_shear,data_translate,data_center]
+transforms = [data_transforms]#,data_jitter_hue,data_jitter_brightness,data_jitter_saturation,data_jitter_contrast,data_rotate,data_hvflip,data_shear,data_translate,data_center]
 output_file = open(args.outfile, "w")
 output_file.write("Filename,ClassId\n")
 
@@ -64,5 +64,3 @@ output_file.close()
 print("Succesfully wrote " + args.outfile + ', you can upload this file to the kaggle '
       'competition at https://www.kaggle.com/c/nyu-cv-fall-2017/')
         
-
-
