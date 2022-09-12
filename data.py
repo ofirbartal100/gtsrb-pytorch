@@ -1,14 +1,28 @@
 from __future__ import print_function
 import zipfile
 import os
-
+import numpy as np
 import torchvision.transforms as transforms
+import torch
+import torch.nn.functional as F
+import imgaug.augmenters as iaa
+
+# import cv2
+
+# def image_brightness_normalisation(image):
+#     image[:,:,0] = cv2.equalizeHist(image[:,:,0])
+#     image[:,:,1] = cv2.equalizeHist(image[:,:,1])
+#     image[:,:,2] = cv2.equalizeHist(image[:,:,2])
+#     return image
 
 # data augmentation for training and test time
 # Resize all images to 32 * 32 and normalize them to mean = 0 and standard-deviation = 1 based on statistics collected from the training set
 
 data_transforms = transforms.Compose([
-	transforms.Resize((32, 32)),
+	iaa.Sequential([
+        iaa.Resize(32),
+        iaa.pillike.Equalize(),
+    ]).augment_image,
     transforms.ToTensor(),
     transforms.Normalize((0.3337, 0.3064, 0.3171), ( 0.2672, 0.2564, 0.2629))
 ])

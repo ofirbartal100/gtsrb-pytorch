@@ -13,6 +13,12 @@ from data import initialize_data # data.py in the same folder
 from model import Net
 import torchvision
 
+import pandas as pd
+
+
+
+
+
 
 parser = argparse.ArgumentParser(description='PyTorch GTSRB evaluation script')
 parser.add_argument('--data', type=str, default='data', metavar='D',
@@ -29,7 +35,8 @@ model = Net()
 model.load_state_dict(state_dict)
 model.eval()
 
-from data import data_jitter_hue,data_jitter_brightness,data_jitter_saturation,data_jitter_contrast,data_rotate,data_hvflip,data_shear,data_translate,data_center,data_grayscale , data_transforms
+# from data import data_jitter_hue,data_jitter_brightness,data_jitter_saturation,data_jitter_contrast,data_rotate,data_hvflip,data_shear,data_translate,data_center,data_grayscale , data_transforms
+from data import data_transforms
 
 
 test_dir = args.data + '/test_images'
@@ -44,12 +51,13 @@ transforms = [data_transforms]#,data_jitter_hue,data_jitter_brightness,data_jitt
 output_file = open(args.outfile, "w")
 output_file.write("Filename,ClassId\n")
 
-for f in tqdm(os.listdir(test_dir)):
+for f in tqdm(sorted(os.listdir(test_dir))):
     if 'ppm' in f:
         output = torch.zeros([1, 43], dtype=torch.float32)
         with torch.no_grad():
             for i in range(0,len(transforms)):
-                data = transforms[i](pil_loader(test_dir + '/' + f))
+                
+                data = transforms[i](np.array(pil_loader(test_dir + '/' + f)))
                 data = data.view(1, data.size(0), data.size(1), data.size(2))
                 data = Variable(data)
                 output = output.add(model(data))
@@ -61,6 +69,8 @@ for f in tqdm(os.listdir(test_dir)):
 
 output_file.close()
 
-print("Succesfully wrote " + args.outfile + ', you can upload this file to the kaggle '
-      'competition at https://www.kaggle.com/c/nyu-cv-fall-2017/')
         
+gt = pd.read_csv('/workspace/gtsrb_pytorch/data/GT-final_test.csv',sep=';')
+p = pd.read_csv(args.outfile)
+
+print(f"Acc: {(gt['ClassId']==p['ClassId']).mean()*100:.3f}%")
