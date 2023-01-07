@@ -1,4 +1,6 @@
 from __future__ import print_function
+import warnings
+warnings.filterwarnings("ignore")
 import argparse
 from tqdm import tqdm
 import os
@@ -14,10 +16,6 @@ from model import Net
 import torchvision
 
 import pandas as pd
-
-
-
-
 
 
 parser = argparse.ArgumentParser(description='PyTorch GTSRB evaluation script')
@@ -57,10 +55,11 @@ for f in tqdm(sorted(os.listdir(test_dir))):
         with torch.no_grad():
             for i in range(0,len(transforms)):
                 
-                data = transforms[i](np.array(pil_loader(test_dir + '/' + f)))
+                # data = transforms[i](np.array(pil_loader(test_dir + '/' + f)))
+                data = transforms[i](pil_loader(test_dir + '/' + f))
                 data = data.view(1, data.size(0), data.size(1), data.size(2))
                 data = Variable(data)
-                output = output.add(model(data))
+                output = output.add(model.forward_original(data))
             pred = output.data.max(1, keepdim=True)[1]
             file_id = f[0:5]
             output_file.write("%s,%d\n" % (file_id, pred))

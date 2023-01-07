@@ -90,3 +90,21 @@ class Net(nn.Module):
         return x
         # x = self.fc2(x)
         # return F.log_softmax(x, dim=1)
+    
+    def forward_original(self, x):
+        # transform the input
+        x = self.stn(x)
+
+        # Perform forward pass
+        x = self.bn1(F.max_pool2d(F.leaky_relu(self.conv1(x)),2))
+        x = self.conv_drop(x)
+        x = self.bn2(F.max_pool2d(F.leaky_relu(self.conv2(x)),2))
+        x = self.conv_drop(x)
+        x = self.bn3(F.max_pool2d(F.leaky_relu(self.conv3(x)),2))
+        x = self.conv_drop(x)
+        x = x.view(-1, 250*2*2)
+        x = F.relu(self.fc1(x))
+        x = F.dropout(x, training=self.training)
+        # return x
+        x = self.fc2(x)
+        return F.log_softmax(x, dim=1)
