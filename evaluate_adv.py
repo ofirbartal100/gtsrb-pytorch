@@ -30,6 +30,8 @@ else:
 
 
 val_data_path = '/workspace/dabs/data/adv_data/traffic_sign/07_01_2023/traffic_budget_budget=0.005/val'
+val_data_path = '/workspace/dabs/data/adv_data/traffic_sign/14_01_2023/traffic_budget_budget=0.025/val'
+# val_data_path = '/workspace/gtsrb_pytorch/data/val_images'
 # val_data_path = '/workspace/gtsrb_pytorch/data/val_images'
 # Apply data transformations on the training images to augment dataset
 val_loader = torch.utils.data.DataLoader(
@@ -40,7 +42,7 @@ if use_gpu:
     model.cuda()
 
 model.eval()
-validation_loss = 0
+
 correct = 0
 for data, target in tqdm(val_loader):
     with torch.no_grad():
